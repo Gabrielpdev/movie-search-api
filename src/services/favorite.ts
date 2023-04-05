@@ -35,3 +35,16 @@ export const ListFavoritesMovies = async () => {
     throw new Error("Failed to list favorites movies");
   }
 };
+
+export const RemoveFavoritesMovies = async (id: string) => {
+  try {
+    return await prisma.favorites.delete({
+      where: {
+        id,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to list favorites movies");
+  }
+};

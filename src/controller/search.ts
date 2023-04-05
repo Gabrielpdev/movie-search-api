@@ -14,7 +14,11 @@ export const SearchController = async (
     type: z.enum(["movie", "serie", "episode"]).optional(),
   });
 
-  const queryParams = getMovieQuery.parse(request.query as IMoviesServices);
+  const queryParams = {
+    plot: "full",
+    type: "movie",
+    ...getMovieQuery.parse(request.query as IMoviesServices),
+  };
 
   const params = Object.fromEntries(
     Object.entries(queryParams).filter(([_, value]) => value !== undefined)

@@ -8,4 +8,5 @@ export async function movieRoutes(app: FastifyInstance) {
 
   app.get("/favorites", FavoritesController.list);
   app.post("/favorite", FavoritesController.create);
+  app.delete("/favorite/:id", FavoritesController.delete);
 }

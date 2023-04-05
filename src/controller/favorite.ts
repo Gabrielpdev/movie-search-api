@@ -1,5 +1,9 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { CreateFavoriteMovie, ListFavoritesMovies } from "../services/favorite";
+import {
+  CreateFavoriteMovie,
+  ListFavoritesMovies,
+  RemoveFavoritesMovies,
+} from "../services/favorite";
 import { z } from "zod";
 import { FavoriteDto } from "../dtos/favorite";
 
@@ -22,6 +26,11 @@ export default {
 
   async list(_: FastifyRequest, reply: FastifyReply) {
     const response = await ListFavoritesMovies();
+    reply.send(response);
+  },
+
+  async delete(request: FastifyRequest, reply: FastifyReply) {
+    const response = await RemoveFavoritesMovies(request.params.id as string);
     reply.send(response);
   },
 };

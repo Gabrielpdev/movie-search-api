@@ -18,10 +18,14 @@ export interface IMoviesServices {
 export const moviesServices = async (params: IMoviesServices) => {
   try {
     const { data } = await axios.get(
-      `${env.API_URL}/?apikey=${env.API_KEY}&plot=${
-        params?.plot ?? "full"
-      }&type=${params?.type ?? "movie"}&${new URLSearchParams({ ...params })}`
+      `${env.API_URL}/?apikey=${env.API_KEY}&${new URLSearchParams({
+        ...params,
+      })}`
     );
+
+    if (data.Response === "False") {
+      throw new Error("Movie not found");
+    }
 
     const movieDto: IMovieDto = new MovieDto(
       data.imdbID,
@@ -40,10 +44,15 @@ export const moviesServices = async (params: IMoviesServices) => {
       data.Awards
     );
 
-    const isFavorite = await prisma.favorites.findUnique({
+    const isFavorite = await prisma.favorites.findFirst({
       where: {
-        id: movieDto.imdbID,
+        id: data.imdbID,
       },
+    });
+
+    console.log({
+      ...data,
+      isFavorite: !!isFavorite,
     });
 
     return {
