@@ -1,6 +1,10 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { IMoviesServices, moviesServices } from "../services/search";
+import { IMoviesServices, MovieService } from "../services/search";
 import { z } from "zod";
+import { PrismaFavoriteRepository } from "../repositories/prisma/prisma-favorite-repositories";
+
+const favoriteRepository = new PrismaFavoriteRepository();
+const movieService = new MovieService(favoriteRepository);
 
 export const SearchController = async (
   request: FastifyRequest,
@@ -24,6 +28,11 @@ export const SearchController = async (
     Object.entries(queryParams).filter(([_, value]) => value !== undefined)
   );
 
-  const response = await moviesServices(params);
-  reply.send(response);
+  try {
+    const response = await movieService.execute(params);
+    reply.send(response);
+  } catch (err) {
+    console.error(err);
+    return reply.status(409).send();
+  }
 };

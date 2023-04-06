@@ -1,50 +1,22 @@
-import { PrismaClient } from "@prisma/client";
 import { FavoriteDto } from "../dtos/favorite";
+import { FavoriteRepository } from "../repositories/favorite-repository";
 
-const prisma = new PrismaClient();
+export class FavoriteService {
+  constructor(private favoriteRepository: FavoriteRepository) {}
 
-export const CreateFavoriteMovie = async ({ id, title, img }: FavoriteDto) => {
-  try {
-    await prisma.favorites.create({
-      data: {
-        id,
-        img,
-        title,
-      },
-    });
+  async create({ id, title, img }: FavoriteDto) {
+    const movie = await this.favoriteRepository.create({ id, title, img });
 
-    return {
-      message: "Movie added to favorites",
-      movie: {
-        id,
-        img,
-        title,
-      },
-    };
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch data from external API");
+    return movie;
   }
-};
 
-export const ListFavoritesMovies = async () => {
-  try {
-    return await prisma.favorites.findMany();
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to list favorites movies");
-  }
-};
+  async list() {
+    const movies = await this.favoriteRepository.list();
 
-export const RemoveFavoritesMovies = async (id: string) => {
-  try {
-    return await prisma.favorites.delete({
-      where: {
-        id,
-      },
-    });
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to list favorites movies");
+    return movies;
   }
-};
+
+  async delete(id: string) {
+    await this.favoriteRepository.delete(id);
+  }
+}
